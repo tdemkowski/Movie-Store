@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const stripe = require('stripe')('sk_test_51HdrgLAfAJFOyCIL1Amh2KKW7mPhAo7hBbM8EaeftdhIqxRzBXXmqJ7WNUDUKjbO9CXNPmTUbxpNGz98Mc8DzHvX000j9WCKlH')
-// const stripe = require('stripe')('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') // REAL ONE
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 const PDFDocument = require("pdfkit");
 
