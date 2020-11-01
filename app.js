@@ -14,11 +14,21 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 
+const aws = require("aws-sdk");
+const multerS3 = require("multer-s3");
+
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.vzubn.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`;
 
+aws.config.update({
+  secretAccessKey: 'ggLfzjKrykQLecRAc4DDgc8g3PXZU1al5LgYYb/B',
+  accessKeyId: 'AKIAJUK3YGODQRSDTV7A',
+  region: 'us-east-1'
+});
+
+const s3 = new aws.s3();
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -29,14 +39,27 @@ const csrfProtection = csrf();
 // const privateKey = fs.readFileSync("server.key");
 // const certificate = fs.readFileSync("server.cert");
 
-const fileStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "images");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
+let fileStorage = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: "upload-my-images",
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString());
+    },
+  }),
 });
+
+// const fileStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "images");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
 
 const fileFilter = (req, file, cb) => {
   if (
@@ -68,6 +91,7 @@ app.use(morgan("combined", { stream: accessLogStream }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
+  // multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 ); // 'image' comes from our form input name
 app.use(express.static(path.join(__dirname, "public")));
@@ -125,9 +149,9 @@ mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(result => {
     // https
-      // .createServer({ key: privateKey, cert: certificate }, app)
-      // .listen(process.env.PORT || 3000);
-    app.listen(process.env.PORT || 3000)
+    // .createServer({ key: privateKey, cert: certificate }, app)
+    // .listen(process.env.PORT || 3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch(err => {
     console.log(err);
