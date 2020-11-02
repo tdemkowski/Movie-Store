@@ -14,14 +14,14 @@
                 <% }) %>
             </ul>
             <div class="centered">
-                <h2>Total: <%= totalSum %></h2>
+                <h2>Total: $<%= totalSum %></h2>
             </div>
             <div class="centered">
                 <button id="order-btn" class="btn">ORDER</button>
                 <script src="https://js.stripe.com/v3/"></script>
                 <script>
-                    let stripe = Stripe('pk_test_51HdrgLAfAJFOyCILzSZMK7gt5rhzILZfpO6yB2ttiWrSvJrKoLRIr8ptDfifrdB50qJc5l82JBDfIWh3kG30BfyU00FFTG7i1w');
-                    // let stripe = Stripe('pk_live_51HdrgLAfAJFOyCIL9fe0lKbm4IeqT75V6n6z2jGwBBY9y59GOyDk1NHCYc3K9N9xVkqZrRFGf6anvVbdD6NUvuns00wwRbAubT'); real key
+                    // let stripe = Stripe('pk_test_51HdrgLAfAJFOyCILzSZMK7gt5rhzILZfpO6yB2ttiWrSvJrKoLRIr8ptDfifrdB50qJc5l82JBDfIWh3kG30BfyU00FFTG7i1w');
+                    let stripe = Stripe('pk_live_51HdrgLAfAJFOyCIL9fe0lKbm4IeqT75V6n6z2jGwBBY9y59GOyDk1NHCYc3K9N9xVkqZrRFGf6anvVbdD6NUvuns00wwRbAubT');
                     let orderBtn = document.getElementById('order-btn')
                     orderBtn.addEventListener('click', function() {
                         stripe.redirectToCheckout({

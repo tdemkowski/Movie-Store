@@ -22,12 +22,6 @@ const User = require("./models/user");
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.vzubn.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`;
 
-// aws.config.update({
-//   secretAccessKey: 'ggLfzjKrykQLecRAc4DDgc8g3PXZU1al5LgYYb/B',
-//   accessKeyId: 'AKIAJUK3YGODQRSDTV7A',
-//   region: 'us-east-1'
-// });
-
 // const s3 = new aws.S3()
 const app = express();
 const store = new MongoDBStore({
@@ -85,7 +79,20 @@ const accessLogStream = fs.createWriteStream(
   { flags: "a" }
 );
 
-app.use(helmet());
+// app.use(
+//   helmet.contentSecurityPolicy({
+//       directives: {
+//           'default-src': ["'self'"],
+//           'script-src': ["'self'", "'unsafe-inline'", 'js.stripe.com'],
+//           'style-src': ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+//           'frame-src': ["'self'", 'js.stripe.com'],
+//           'font-src': ["'self'", 'fonts.googleapis.com', 'fonts.gstatic.com']
+//       },
+//   })
+// )
+
+app.use(helmet({contentSecurityPolicy: false}))
+
 app.use(compression());
 app.use(morgan("combined", { stream: accessLogStream }));
 
